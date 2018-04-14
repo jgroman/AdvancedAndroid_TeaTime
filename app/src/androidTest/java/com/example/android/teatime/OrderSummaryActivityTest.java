@@ -16,24 +16,56 @@
 
 package com.example.android.teatime;
 
-// TODO (1) Add annotation to specify AndroidJUnitRunner class as the default test runner
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
+
+// COMPLETED (1) Add annotation to specify AndroidJUnitRunner class as the default test runner
+@RunWith(JUnit4.class)
 public class OrderSummaryActivityTest {
 
-    // TODO (2) Add the rule that indicates we want to use Espresso-Intents APIs in functional UI tests
+    private static final String EMAIL_MSG = "TeaTime standard email message.";
+
+    // COMPLETED (2) Add the rule that indicates we want to use Espresso-Intents APIs in functional UI tests
+    @Rule
+    public IntentsTestRule<OrderSummaryActivity> mActivityRule = new IntentsTestRule<>(OrderSummaryActivity.class);
 
 
-    // TODO (3) Finish this method which runs before each test and will stub all external
+    // COMPLETED (3) Finish this method which runs before each test and will stub all external
     // intents so all external intents will be blocked
-
+    @Before
     public void stubAllExternalIntents() {
-
+        intending(not(isInternal())).respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
     }
 
 
-    // TODO (4) Finish this method which verifies that the intent sent by clicking the send email
+    // COMPLETED (4) Finish this method which verifies that the intent sent by clicking the send email
     // button matches the intent sent by the application
-
+    @Test
     public void clickSendEmailButton_SendsEmail() {
+        onView(withId(R.id.send_email_button)).perform(click());
 
+        intended(allOf(
+                hasAction(Intent.ACTION_SENDTO),
+                hasExtra(Intent.EXTRA_TEXT, EMAIL_MSG)
+                 ));
     }
 }
